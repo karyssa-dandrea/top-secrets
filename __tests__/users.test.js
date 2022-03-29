@@ -40,4 +40,20 @@ describe('top-secrets routes', () => {
       user,
     });
   });
+  it('should sign out the user', async () => {
+    await UserService.create({
+      username: 'ryssa',
+      password: 'tokio',
+    });
+    await UserService.logIn({
+      username: 'ryssa',
+      password: 'tokio',
+    });
+    const res = await request(app).delete('/api/v1/users/session');
+
+    expect(res.body).toEqual({
+      success: true,
+      message: 'Logout successful!',
+    });
+  });
 });
