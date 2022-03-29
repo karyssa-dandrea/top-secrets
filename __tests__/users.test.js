@@ -42,11 +42,11 @@ describe('top-secrets routes', () => {
   });
   it('should sign out the user', async () => {
     await UserService.create({
-      username: 'ryssa',
+      email: 'ryssa',
       password: 'tokio',
     });
     await UserService.logIn({
-      username: 'ryssa',
+      email: 'ryssa',
       password: 'tokio',
     });
     const res = await request(app).delete('/api/v1/users/session');
