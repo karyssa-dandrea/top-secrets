@@ -2,8 +2,6 @@ const pool = require('../lib/utils/pool');
 const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
-const Secret = require('../lib/models/Secret');
-const UserService = require('../lib/services/UserService');
 
 const mockUser = {
   firstName: 'Test',
@@ -23,15 +21,14 @@ describe('top-secrets routes', () => {
 
   it('creates a secret', async () => {
     const agent = request.agent(app);
-    await UserService.create({ ...mockUser });
-    const { email, password } = mockUser;
-    await agent.post('/api/v1/users/session').send({ email, password });
+    await agent.post('/api/v1/users').send(mockUser);
+    await agent.post('/api/v1/users/session').send(mockUser);
 
     const expected = {
       title: 'Nori and Tokio',
       description: 'the cutest pups',
     };
-    const res = await request(app).post('/api/v1/secrets').send(expected);
+    const res = await agent.post('/api/v1/secrets').send(expected);
 
     expect(res.body).toEqual({
       id: expect.any(String),
@@ -40,10 +37,19 @@ describe('top-secrets routes', () => {
     });
   });
 
-  it('gets list of secerets', async () => {
-    const expected = await Secret.findAll();
+  it('gets list of secrets if user is signed in', async () => {
+    const agent = request.agent(app);
+    await agent.post('/api/v1/users').send(mockUser);
+
+    await agent.post('/api/v1/users/session').send(mockUser);
+
+    const expected = { title: 'Nori', description: 'Tokio' };
+    await agent.post('/api/v1/secrets').send(expected);
+
     const res = await request(app).get('/api/v1/secrets');
 
-    expect(res.body).toEqual(expected);
+    expect(res.body).toEqual([
+      { ...expected, id: expect.any(String), createdAt: expect.any(String) },
+    ]);
   });
 });
