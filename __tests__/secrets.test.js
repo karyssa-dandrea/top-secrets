@@ -46,7 +46,7 @@ describe('top-secrets routes', () => {
     const expected = { title: 'Nori', description: 'Tokio' };
     await agent.post('/api/v1/secrets').send(expected);
 
-    const res = await request(app).get('/api/v1/secrets');
+    const res = await agent.get('/api/v1/secrets');
 
     expect(res.body).toEqual([
       { ...expected, id: expect.any(String), createdAt: expect.any(String) },

@@ -20,7 +20,4 @@ CREATE TABLE secrets (
 
 );
 
-INSERT INTO
-secrets (title, description)
-VALUES
-('title', 'description')
+
